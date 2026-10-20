@@ -49,8 +49,8 @@ training recipe:
   (`benchmark_efficiency.py`, FLOPs/latency/throughput/peak memory vs. the static
   LV-ViT-M counterpart) reported in the paper.
 - **`notebooks/`** is a self-contained, Colab-ready reproduction of the same model
-  and the *main* experiment (seed 5), with the figures used in the paper. No
-  imports from `src/`.
+  and the *main* experiment and the two generalization tests (seeds 5, 16 and 25),
+  with the figures used in the paper. No imports from `src/`.
 
 The **baselines** are a separate small Python package under
 `src/baselines/`, also meant to be run from the command line.
