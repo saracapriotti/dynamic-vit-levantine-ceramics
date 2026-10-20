@@ -5,7 +5,7 @@ Classification of Levantine Archaeological Ceramics"*.
 
 Fine-tunes **DynamicViT-LVViT-M/0.7** on a petrographic image
 dataset of Levantine ceramics (20 fabric classes), and compares it against
-baselines (Swin-Tiny/Small, EfficientNet, static LV-ViT-M).
+baselines (Swin-Tiny/Small, static LV-ViT-M).
 
 ---
 
@@ -155,7 +155,7 @@ automatically from Google Drive if not already present:
 
 ```bash
 cd src/baselines
-python train_baseline.py --model swin_small   # or: swin_tiny, lvvit, efficientnet_b0
+python train_baseline.py --model swin_small   # or: swin_tiny, lvvit
 ```
 
 The train/val/test split is fixed by `config.SEED` and identical across models and
