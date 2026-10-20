@@ -1,0 +1,19 @@
+# On ARM64 (NVIDIA Grace-Blackwell) install PyTorch from the NVIDIA index:
+#   pip install torch torchvision --extra-index-url https://pypi.nvidia.com
+# On x86 with CUDA 11.8/12.1 use the standard PyTorch index instead.
+torch>=1.8.0
+torchvision>=0.9.0
+timm==0.6.13
+tensorboardX
+six
+fvcore
+pandas
+Pillow
+scikit-learn
+tqdm
+gdown
+matplotlib
+seaborn
+scikit-image
+scipy
+numpy<2
