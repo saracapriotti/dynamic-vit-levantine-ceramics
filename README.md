@@ -44,10 +44,9 @@ training recipe:
 
 - **`src/dynamicvit/`** is the actual development codebase: plain Python modules
   (`config.py`, `dataset.py`, `model.py`, `train.py`, `evaluate.py`, `xai.py`), run
-  from the command line. This is what produced the 3-seed runs
-  (`train_dynamicvit_3seeds.py`) and the efficiency benchmark
+  from the command line. It also includes the efficiency benchmark
   (`benchmark_efficiency.py`, FLOPs/latency/throughput/peak memory vs. the static
-  LV-ViT-M counterpart) reported in the paper.
+  LV-ViT-M counterpart).
 - **`notebooks/`** is a self-contained, Colab-ready reproduction of the same model
   and the *main* experiment and the two generalization tests (seeds 5, 16 and 25),
   with the figures used in the paper. No imports from `src/`.
