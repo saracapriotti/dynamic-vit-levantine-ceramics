@@ -114,8 +114,10 @@ Paths and hyperparameters are centralised in `config.py` (same defaults as the
 baselines: `SEED=5`, 70/15/15 split, 20 classes; plus the Dynamic ViT-specific
 pruning/distillation settings, see the [Configuration](#configuration) table below).
 
-To reproduce the paper's mean±std results and the efficiency comparison against
-the static LV-ViT-M counterpart:
+The paper's results (Tables 3–4) are reproduced with `notebooks/01_training.ipynb`
+(seeds 5, 16 and 25). The scripts below provide an alternative multi-seed run
+(fixed split, seeds 0/1/2) and the efficiency comparison against the static
+LV-ViT-M counterpart:
 
 ```bash
 python train_dynamicvit_3seeds.py    # 3 runs (seeds 0/1/2), same fixed data split
@@ -140,8 +142,10 @@ precision/recall/F1 and weighted ROC-AUC on the test split.
 ### Dynamic ViT: XAI / interpretability
 
 Run **`notebooks/02_xai.ipynb`**. Reproduces Figures 3–7 of the paper for the
-trained model (main experiment, seed 5), the checkpoint is downloaded
-automatically from Google Drive if not already present:
+trained model (main experiment, seed 5). The checkpoint is downloaded
+automatically from Google Drive if not already present, and can also be
+downloaded directly here:
+**[DYNAMIC_VIT_model.pth](https://drive.google.com/file/d/1UnUDhQyZtEgaVZZQyvon5F4s-CDpHYTQ/view)**
 
 | Section | Figure |
 |---|---|
