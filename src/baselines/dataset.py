@@ -84,12 +84,26 @@ def collate_fn(batch):
     return torch.utils.data.default_collate(batch)
 
 
+def split_70_15_15(n: int, seed: int):
+    """
+    70/15/15 train/val/test split, identical to the one used for the Dynamic ViT
+    (notebooks/01_training.ipynb): after setting the seed, random_split is called
+    twice and the second call defines the split.
+    """
+    set_seed(seed)
+    lengths = [int(config.TRAIN_RATIO * n), int(config.VAL_RATIO * n)]
+    lengths.append(n - sum(lengths))
+    torch.utils.data.random_split(range(n), lengths)
+    train, val, test = torch.utils.data.random_split(range(n), lengths)
+    return train.indices, val.indices, test.indices
+
+
 def build_dataloaders(
     csv_file: str = config.CSV_FILE,
     img_dir: str = config.IMG_DIR,
     seed: int = config.SEED,
 ):
-    set_seed(seed)
+    """Data loaders for one seed. The seed defines the split, exactly as for the Dynamic ViT."""
     train_transform, val_transform = get_transforms()
 
     # Separate dataset objects for training and evaluation, so that each subset
@@ -99,18 +113,12 @@ def build_dataloaders(
     eval_base = FabricsDataset(csv_file, img_dir, transform=val_transform)
 
     n = len(train_base)
-    train_size = int(config.TRAIN_RATIO * n)
-    val_size   = int(config.VAL_RATIO * n)
-    test_size  = n - train_size - val_size
+    train_idx, val_idx, test_idx = split_70_15_15(n, seed)
+    train_size, val_size, test_size = len(train_idx), len(val_idx), len(test_idx)
 
-    generator = torch.Generator().manual_seed(seed)
-    train_idx, val_idx, test_idx = torch.utils.data.random_split(
-        range(n), [train_size, val_size, test_size], generator=generator
-    )
-
-    train_ds = Subset(train_base, train_idx.indices)
-    val_ds   = Subset(eval_base, val_idx.indices)
-    test_ds  = Subset(eval_base, test_idx.indices)
+    train_ds = Subset(train_base, train_idx)
+    val_ds   = Subset(eval_base, val_idx)
+    test_ds  = Subset(eval_base, test_idx)
 
     loader_kwargs = dict(
         batch_size=config.BATCH_SIZE,

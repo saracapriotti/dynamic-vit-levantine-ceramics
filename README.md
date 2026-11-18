@@ -5,7 +5,7 @@ Classification of Levantine Archaeological Ceramics"*.
 
 Fine-tunes **DynamicViT-LVViT-M/0.7** on a petrographic image
 dataset of Levantine ceramics (20 fabric classes), and compares it against
-baselines (Swin-Tiny/Small, static LV-ViT-M).
+baselines (Swin-Small, static LV-ViT-M).
 
 ---
 
@@ -109,9 +109,11 @@ python evaluate.py    # accuracy, confusion matrix, per-class entropy, calibrati
 python xai.py         # token pruning viz, keep-prob heatmap, token survival, influence overlay
 ```
 
-Paths and hyperparameters are centralised in `config.py` (same defaults as the
-baselines: `SEED=5`, 70/15/15 split, 20 classes; plus the Dynamic ViT-specific
-pruning/distillation settings, see the [Configuration](#configuration) table below).
+Paths and hyperparameters are centralised in `config.py` (`SEED=5`, 70/15/15 split,
+20 classes, plus the Dynamic ViT-specific pruning/distillation settings, see the
+[Configuration](#configuration) table below). Note that the CLI builds its split with a
+`torch.Generator`, so its test set is not the one used in the paper: to reproduce the
+paper, or to evaluate the released weights, use the notebooks.
 
 The paper's results (Tables 3–4) are reproduced with `notebooks/01_training.ipynb`
 (seeds 5, 16 and 25). The scripts below provide an alternative multi-seed run
@@ -122,6 +124,10 @@ LV-ViT-M counterpart:
 python train_dynamicvit_3seeds.py    # 3 runs (seeds 0/1/2), same fixed data split
 python benchmark_efficiency.py       # FLOPs, latency, throughput, peak GPU memory
 ```
+
+> `train_dynamicvit_3seeds.py` is an **extra** alternative multi-seed run, not used for
+> the results reported in the paper. It can be run instead of the notebook, but its
+> numbers are not expected to match Tables 3–4 (different split and seeds).
 
 ### Dynamic ViT: training & evaluation (notebook)
 
@@ -158,13 +164,18 @@ downloaded directly here:
 
 ```bash
 cd src/baselines
-python train_baseline.py --model swin_small   # or: swin_tiny, lvvit
+python train_baseline.py --model swin_small   # or: lvvit
 ```
 
-The train/val/test split is fixed by `config.SEED` and identical across models and
-runs; only the init/shuffling seed changes between runs of the same model. To train
-all static baselines sequentially (3 runs each, for mean/std), at low CPU/IO
-priority so it doesn't contend with other jobs on a shared machine:
+The baselines follow the same protocol as the Dynamic ViT (Table 3): one run per
+seed (5, 16 and 25), where each seed defines both the 70/15/15 train/val/test split
+and the initialisation, with exactly the same split function as
+`notebooks/01_training.ipynb`. For every seed, the baselines and the Dynamic ViT are
+therefore trained, validated and tested on the same images. Test metrics are
+computed with the final weights (`EVAL_CHECKPOINT = "final"` in `config.py`, as for the
+Dynamic ViT); the best-validation checkpoint is also saved. To train both static
+baselines sequentially, at low CPU/IO priority so it doesn't contend with other jobs
+on a shared machine (activate your Python environment first):
 
 ```bash
 ./run_all_baselines.sh
@@ -173,12 +184,12 @@ priority so it doesn't contend with other jobs on a shared machine:
 ### Baselines: evaluation
 
 ```bash
-python eval_metrics_table.py                  # all baselines
+python eval_metrics_table.py                  # Swin-Small and LV-ViT-M
 python eval_metrics_table.py --models swin_small
 ```
 
 Reports accuracy / macro precision / macro recall / macro F1 / weighted ROC-AUC,
-mean ± sample std over the saved runs, same metric definitions used for the
+mean ± sample std over the seeds 5, 16 and 25 (each run on the test split of its seed), same metric definitions used for the
 Dynamic ViT, for the paper's results table (Table 3).
 
 ---
@@ -187,12 +198,13 @@ Dynamic ViT, for the paper's results table (Table 3).
 
 Paths and hyperparameters live in `src/dynamicvit/config.py` (Dynamic ViT CLI) and
 `src/baselines/config.py` (baselines); the notebooks have the same settings in
-their configuration cell. All three share the same dataset split logic
-(`SEED = 5`, 70/15/15 train/val/test, 20 classes).
+their configuration cell. The notebooks and the baselines share the same split
+function (70/15/15 train/val/test, 20 classes, seeds 5, 16 and 25); the Dynamic ViT
+CLI uses a different one (see above).
 
 | Parameter | Default | Description |
 |---|---|---|
-| `SEED` | 5 | reproducibility seed / fixed data split |
+| `SEED` / `SEEDS` | 5 / [5, 16, 25] | seed(s): each seed defines data split and initialisation |
 | `NUM_CLASSES` | 20 | number of fabric classes |
 | `BATCH_SIZE` | 64 | batch size |
 | `NUM_EPOCHS` | 25 | maximum epochs |

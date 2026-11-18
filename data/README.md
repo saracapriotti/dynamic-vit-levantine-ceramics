@@ -14,9 +14,10 @@ data/
 └── DATASET/        # flat folder of images, referenced by dataset.csv
 ```
 
-20 classes (petrographic fabrics). The 70/15/15 train/val/test split is fixed by
-`SEED = 5` (see `src/baselines/config.py` and the notebooks' configuration cells) and
-is identical across every run and every model, so results are comparable.
+20 classes (petrographic fabrics). The 70/15/15 train/val/test split is defined by
+the seed (5, 16 or 25; see `src/baselines/config.py` and the notebooks' configuration
+cells): for a given seed it is identical for the Dynamic ViT and for the baselines,
+so results are comparable.
 
 ## Preparing the images
 

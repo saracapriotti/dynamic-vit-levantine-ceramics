@@ -11,7 +11,9 @@ PRETRAINED_PATH = os.path.join(OUTPUT_DIR, "pretrained", "dynamic-vit_lv-m_r0.7.
 BASELINES_DIR   = os.path.join(OUTPUT_DIR, "baselines_output")
 
 # ── Reproducibility ────────────────────────────────────────────────────────────
-SEED = 5   # fixes the train/val/test split, identical for every run and model
+SEEDS = [5, 16, 25]   # one run per seed; each seed defines the train/val/test split and
+                      # the initialisation, as for the Dynamic ViT (Table 3 of the paper)
+SEED  = SEEDS[0]      # default for single-run use
 
 # ── Dataset ────────────────────────────────────────────────────────────────────
 TRAIN_RATIO  = 0.70
@@ -42,3 +44,7 @@ SKIP_LAM     = 2.0
 NUM_EPOCHS    = 25
 LEARNING_RATE = 1e-4
 PATIENCE      = 8
+
+# Checkpoint used for the test metrics: "final" (weights at the end of training,
+# as for the Dynamic ViT in the paper) or "best" (highest validation accuracy)
+EVAL_CHECKPOINT = "final"

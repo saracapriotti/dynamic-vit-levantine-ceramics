@@ -18,7 +18,13 @@ if _DYNVIT_ROOT not in sys.path:
 from calc_flops import calc_flops  # DynamicViT/calc_flops.py (fvcore-based)
 
 from model import load_model
-from model_baselines import build_lvvit
+
+# build_lvvit lives in src/baselines/model_baselines.py; it uses the LV-ViT-M
+# settings of this folder's config.py, which are identical
+_BASELINES_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "baselines")
+if _BASELINES_DIR not in sys.path:
+    sys.path.append(_BASELINES_DIR)
+from model_baselines import build_lvvit  # noqa: E402
 
 
 @torch.no_grad()
@@ -80,7 +86,9 @@ if __name__ == "__main__":
     del dvit
     torch.cuda.empty_cache()
 
-    static_ckpt = os.path.join(config.BASELINES_DIR, "lvvit", "run0", "best_lvvit.pth")
+    # static LV-ViT-M trained with src/baselines/train_baseline.py --model lvvit (seed 5)
+    static_ckpt = os.environ.get(
+        "LVVIT_CKPT", os.path.join(config.BASELINES_DIR, "lvvit", "seed5", "final_lvvit.pth"))
     static = build_lvvit(num_classes=num_classes, device=device)
     static.load_state_dict(torch.load(static_ckpt, map_location=device))
     r_static = benchmark("LV-ViT-M static (pruning OFF)", static, device)
